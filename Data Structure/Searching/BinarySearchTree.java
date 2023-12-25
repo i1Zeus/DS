@@ -1,0 +1,206 @@
+package Searching;
+
+public class BinarySearchTree {
+
+  public static void main(String[] args) {
+    BinarySearchTree tree = new BinarySearchTree();
+    BinarySearchTree tree2 = new BinarySearchTree();
+
+    tree.insert(12);
+    tree.insert(15);
+    tree.insert(3);
+    tree.insert(35);
+    tree.insert(21);
+    tree.insert(40);
+    tree.insert(14);
+    tree.insert(140);
+
+    tree2.insert(15);
+    tree2.insert(75);
+    tree2.insert(37);
+    tree2.insert(5);
+    tree2.insert(1);
+    tree2.insert(4);
+    tree2.insert(40);
+
+    System.out.print("InOrder traversal: ");
+    tree.inOrder();
+
+    System.out.println("\nAfter deleting 3");
+    tree.deleteKey(3);
+
+    System.out.print("InOrder traversal: ");
+    tree.inOrder();
+
+    System.out.println();
+    tree.search(6);
+
+    System.out.println();
+    tree.countNodes();
+
+    tree.max();
+
+    System.out.println();
+
+    // * Merge two trees
+    System.out.println("InOrder traversal: ");
+    tree.inOrder();
+    System.out.println();
+    tree2.inOrder();
+
+    System.out.println("\nAfter merging");
+    tree2.merge(tree.root);
+
+    System.out.println("InOrder traversal: ");
+    tree2.inOrder();
+
+    System.out.println();
+    tree2.max();
+  }
+
+  class Node {
+    int key;
+    Node left, right;
+
+    public Node(int item) {
+      key = item;
+      left = right = null;
+    }
+  }
+
+  Node root;
+
+  BinarySearchTree() {
+    root = null;
+  }
+
+  // > Insert key in the tree
+  void insert(int key) {
+    root = insertKey(root, key);
+  }
+
+  Node insertKey(Node root, int key) {
+    // * Return a new node if the tree is empty
+    if (root == null) {
+      root = new Node(key);
+      return root;
+    }
+
+    // * Traverse to the right place and insert the node
+    if (key < root.key)
+      root.left = insertKey(root.left, key);
+    else if (key > root.key)
+      root.right = insertKey(root.right, key);
+
+    return root;
+  }
+
+  // > InOrder Traversal
+  void inOrder() {
+    inOrderRec(root);
+  }
+
+  void inOrderRec(Node root) {
+    if (root != null) {
+      inOrderRec(root.left);
+      System.out.print(root.key + " -> ");
+      inOrderRec(root.right);
+    }
+  }
+
+  // > Delete key from the tree
+  void deleteKey(int key) {
+    root = deleteRec(root, key);
+  }
+
+  Node deleteRec(Node root, int key) {
+    // * Return if the tree is empty
+    if (root == null)
+      return root;
+
+    // * Find the node to be deleted
+    if (key < root.key)
+      root.left = deleteRec(root.left, key);
+    else if (key > root.key)
+      root.right = deleteRec(root.right, key);
+    else {
+      // ? If the node is with only one child or no child
+      if (root.left == null)
+        return root.right;
+      else if (root.right == null)
+        return root.left;
+
+      // * If the node has two children
+      root.key = minValue(root.right);
+
+      // * Delete the inOrder successor
+      root.right = deleteRec(root.right, root.key);
+    }
+
+    return root;
+  }
+
+  // > Find the inOrder successor
+  int minValue(Node root) {
+    int minValue = root.key;
+    while (root.left != null) {
+      minValue = root.left.key;
+      root = root.left;
+    }
+    return minValue;
+  }
+
+  // > Search for a key in the tree
+  void search(int s) {
+    searchRec(root, s);
+  }
+
+  void searchRec(Node root, int s) {
+    if (root == null)
+      System.out.print("not found");
+    else if (root.key == s)
+      System.out.print("found");
+    else if (root.key > s)
+      searchRec(root.left, s);
+    else
+      searchRec(root.right, s);
+  }
+
+  // > Number of nodes in the tree
+  void countNodes() {
+    System.out.println(countNodesRec(root));
+  }
+
+  int countNodesRec(Node root) {
+    if (root == null)
+      return 0;
+    else
+      return 1 + countNodesRec(root.left) + countNodesRec(root.right);
+  }
+
+  // > Maximum of the tree
+  void max() {
+    System.out.print(maxRec(root));
+  }
+
+  int maxRec(Node root) {
+    if (root.right == null)
+      return root.key;
+    else
+      return maxRec(root.right);
+  }
+
+  // > Merge two trees
+  void merge(Node root2) {
+    mergeRec(root2);
+  }
+
+  void mergeRec(Node root2) {
+    if (root2 != null) {
+      mergeRec(root2.left);
+      insert(root2.key);
+      mergeRec(root2.right);
+    }
+  }
+
+}
